@@ -15,10 +15,10 @@ services:
       - db
     volumes:
       - type: bind
-        source: ./golang/src
-        target: /go/src
-    # networks:
-    #   - telemy_network
+        source: ./golang
+        target: /go
+    networks:
+      - telemy_network
 
   db:
     container_name: db
@@ -37,13 +37,13 @@ services:
       - type: bind
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
-    # networks:
-    #   - telemy_network
+    networks:
+      - telemy_network
 
 volumes:
   mysql_volume:
     name: mysql_volume
 
-# networks:
-#   telemy_network:
-#     external: true
+networks:
+  telemy_network:
+    external: true
