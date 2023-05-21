@@ -7,9 +7,28 @@ import (
 	"telemy/db"
 )
 
+type Server struct {
+	querier db.Querier
+}
+
 func NewServer() {
+	dbConnection := db.ConnectDB()
+	defer dbConnection.Close()
+
+	queries := db.NewQueries(dbConnection)
+
+	server := Server{
+		querier: queries,
+	}
+
+	server.setupRouter(dbConnection)
+}
+
+func (server *Server) setupRouter() {
 	http.HandleFunc("/", echoHello)
+	http.HandleFunc("/accounts", server.getAccount)
 	http.ListenAndServe(":8080", nil)
+
 }
 
 type Article struct {
@@ -20,7 +39,6 @@ type Article struct {
 
 func echoHello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<h1>Hello World</h1>\n<h2>Hello World</h2>\n<h3>Hello World</h3>")
-	account(w)
 	a := db.ConnectDB()
 	defer a.Close()
 
