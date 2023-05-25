@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,44 +14,51 @@ func createAccount(w http.ResponseWriter) {
 }
 
 func (server *Server) getAccount(w http.ResponseWriter, r *http.Request) {
-	// id := r.URL.Query().Get("id")
-	id := "1"
-	url := fmt.Sprintf("https://localhost/accounts/%d", id)
+	id := r.URL.Path[len("/accounts/"):]
 
-	resp, err := http.Get(url)
+	// パラメータを同値のidを持つデータを取得
+	// エラー処理は必ず修正
+	account, err := server.queries.GetAccount(id)
 	if err != nil {
-		if resp.StatusCode == http.StatusNotFound {
-			http.Error(w, "指定したIDを持つデータが存在しません", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "リクエストの送信に失敗しました", http.StatusInternalServerError)
-		return
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
 	}
-	account := server.queries.GetAccount(id)
-	fmt.Fprintf(w, "ID:%v, Nickname:%s, Email:%s, Password:%s, Created_at:%s", &account.ID, account.Nickname, account.Email, account.Password, account.Created_at)
+
+	jsonData, err := json.Marshal(account)
+	if err != nil {
+		http.Error(w, "json形式への変換に失敗", http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+	// fmt.Fprintf(w, "ID:%v, Nickname:%s, Email:%s, Password:%s, CreatedAt:%s", &account.ID, account.Nickname, account.Email, account.Password, account.CreatedAt)
 
 }
 
 func echoHello(w http.ResponseWriter, r *http.Request) {
+	id := 1
+	getAccount := "SELECT * FROM accounts WHERE id = ? LIMIT 1"
+
 	dbConnection := db.ConnectDB()
 	defer dbConnection.Close()
-	fmt.Fprintf(w, "<h1>Hello World</h1>\n<h2>Hello World</h2>\n<h3>Hello World</h3>")
 
-	rows, err := dbConnection.Query("SELECT * FROM accounts WHERE id = 1 LIMIT 1;")
-	defer rows.Close()
+	row, err := dbConnection.Query(getAccount, id)
 	if err != nil {
-		log.Fatalf("Failed to select: %s", err)
+		log.Fatalln("Db取得に失敗")
 	}
 
-	for rows.Next() {
-		var account db.Account
-		err := rows.Scan(&account.ID, &account.Nickname, &account.Email, &account.Password, &account.Created_at)
-
+	var a db.Account
+	if row.Next() {
+		err = row.Scan(
+			&a.ID,
+			&a.Nickname,
+			&a.Email,
+			&a.Password,
+			&a.CreatedAt,
+		)
 		if err != nil {
-			log.Fatalf("Failed to get rows: %s", err)
+			log.Fatalln("データのスキャンに失敗")
 		}
-		fmt.Fprintf(w, "ID:%v, Nickname:%s, Email:%s, Password:%s, Created_at:%s", &account.ID, account.Nickname, account.Email, account.Password, account.Created_at)
 	}
-	// fmt.Fprintf(w, "DB resule: %s", a)
+	fmt.Fprintf(w, "Account: %s", a)
 
 }
