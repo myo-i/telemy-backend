@@ -1,7 +1,7 @@
 package db
 
 type Querier interface {
-	GetAccount(id string) Account
+	GetAccount(id string) (Account, error)
 }
 
 // これはコンパイル時にインターフェースの実装が正しいことを確認するための文法

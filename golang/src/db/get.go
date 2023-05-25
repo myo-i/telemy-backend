@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -32,21 +31,26 @@ func NewQueries(db *sql.DB) Queries {
 	}
 }
 
-func (q Queries) GetAccount(id string) Account {
+func (q Queries) GetAccount(id string) (Account, error) {
+	var a Account
 	getAccount := "SELECT * FROM accounts WHERE id = ? LIMIT 1"
 
 	row, err := q.connection.Query(getAccount, id)
 	if err != nil {
-		log.Fatalln("Db取得に失敗")
+		return a, err
 	}
 
-	var a Account
-	err = row.Scan(
-		&a.ID,
-		&a.Nickname,
-		&a.Email,
-		&a.Password,
-		&a.Created_at,
-	)
-	return a
+	if row.Next() {
+		err := row.Scan(
+			&a.ID,
+			&a.Nickname,
+			&a.Email,
+			&a.Password,
+			&a.CreatedAt,
+		)
+		if err != nil {
+			return a, err
+		}
+	}
+	return a, err
 }
