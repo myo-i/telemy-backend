@@ -9,14 +9,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Account struct {
-	ID         int
-	Nickname   string
-	Email      string
-	Password   string
-	Created_at string
-}
-
 type Queries struct {
 	connection *sql.DB
 }
@@ -34,13 +26,13 @@ func ConnectDB() *sql.DB {
 	return db
 }
 
-func NewQueries(db *sql.DB) *Queries {
-	return &Queries{
+func NewQueries(db *sql.DB) Queries {
+	return Queries{
 		connection: db,
 	}
 }
 
-func (q *Queries) GetAccount(id string) Account {
+func (q Queries) GetAccount(id string) Account {
 	getAccount := "SELECT * FROM accounts WHERE id = ? LIMIT 1"
 
 	row, err := q.connection.Query(getAccount, id)
