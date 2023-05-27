@@ -52,5 +52,5 @@ func (q Queries) GetAccount(id string) (Account, error) {
 			return a, err
 		}
 	}
-	return a, err
+	return a, nil
 }
