@@ -31,6 +31,17 @@ func NewQueries(db *sql.DB) Queries {
 	}
 }
 
+// type CreateAccountParams struct {
+// 	Nickname string
+// 	Email    string
+// 	Password string
+// }
+
+func (q Queries) CreateAccount(nickname, email, password string) {
+	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
+	result, err := q.connection.Exec(createAccount, nickname, email, password)
+}
+
 func (q Queries) GetAccount(id string) (Account, error) {
 	var a Account
 	getAccount := "SELECT * FROM accounts WHERE id = ? LIMIT 1"
