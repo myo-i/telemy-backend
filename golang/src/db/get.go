@@ -3,8 +3,11 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 	"os"
+	"telemy/api"
 
+	api "command-line-argumentsC:\\Users\\PC_User\\MyProject\\telemy-backend\\golang\\src\\api\\account.go"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -31,15 +34,13 @@ func NewQueries(db *sql.DB) Queries {
 	}
 }
 
-// type CreateAccountParams struct {
-// 	Nickname string
-// 	Email    string
-// 	Password string
-// }
-
-func (q Queries) CreateAccount(nickname, email, password string) {
+func (q Queries) CreateAccount(r api.CreateAccountRequest) {
 	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
-	result, err := q.connection.Exec(createAccount, nickname, email, password)
+	result, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
+
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
 }
 
 func (q Queries) GetAccount(id string) (Account, error) {

@@ -13,19 +13,21 @@ func createAccount(w http.ResponseWriter) {
 	fmt.Fprintf(w, "create account: %s", str)
 }
 
-type createAccountRequest struct {
+type CreateAccountRequest struct {
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func createAcount(w http.ResponseWriter, r http.ResponseWriter) {
+func (server *Server) createAcount(w http.ResponseWriter, r http.ResponseWriter) {
 	// jsonから受け取ったパラメータをcreateAccountRequestにバインドして値を取得し
 	// db.CreateAccountに渡してクエリ実行
+	resp := 
 
 	// レスポンスからnickname, email, passwordを取得
 
 	// DB追加
+	err := server.queries.CreateAccount()
 
 	// できれば挿入したデータをレスポンスとして返す
 
