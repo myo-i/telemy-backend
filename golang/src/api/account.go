@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"telemy/db"
 )
 
@@ -18,29 +17,6 @@ type CreateAccountRequest struct {
 	Nickname string `json:"nickname"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-func (server *Server) createAcount(w http.ResponseWriter, r http.Request) {
-	// jsonから受け取ったパラメータをcreateAccountRequestにバインドして値を取得し
-	// db.CreateAccountに渡してクエリ実行
-	queryParams, err := url.ParseQuery(r.URL.RawQuery)
-	if err != nil {
-		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
-	}
-
-	request := CreateAccountRequest{
-		Nickname: queryParams.Get("nickname"),
-		Email:    queryParams.Get("email"),
-		Password: queryParams.Get("password"),
-	}
-
-	// レスポンスからnickname, email, passwordを取得
-
-	// DB追加
-	err := server.queries.CreateAccount(request)
-
-	// できれば挿入したデータをレスポンスとして返す
-
 }
 
 func (server *Server) getAccount(w http.ResponseWriter, r *http.Request) {
@@ -90,5 +66,18 @@ func echoHello(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Fprintf(w, "Account: %s", a)
+
+}
+
+func insertDemo(w http.ResponseWriter, r *http.Request) {
+	dbConnection := db.ConnectDB()
+	defer dbConnection.Close()
+
+	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
+	_, err := dbConnection.Exec(createAccount, "Bob", "test@insert.com", "demo")
+
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
 
 }
