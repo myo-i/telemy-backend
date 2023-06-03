@@ -13,6 +13,38 @@ func createAccount(w http.ResponseWriter) {
 	fmt.Fprintf(w, "create account: %s", str)
 }
 
+func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
+	var requestBody db.CreateAccountRequest
+
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
+	fmt.Println(requestBody.Nickname)
+
+	err = server.queries.CreateAccount(requestBody)
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
+
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		http.Error(w, "json形式への変換に失敗", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonData)
+
+	// レスポンスからnickname, email, passwordを取得
+
+	// DB追加
+	// err := server.queries.CreateAccount(request)
+
+	// できれば挿入したデータをレスポンスとして返す
+
+}
+
 func (server *Server) getAccount(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/accounts/"):]
 
@@ -60,5 +92,18 @@ func echoHello(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	fmt.Fprintf(w, "Account: %s", a)
+
+}
+
+func insertDemo(w http.ResponseWriter, r *http.Request) {
+	dbConnection := db.ConnectDB()
+	defer dbConnection.Close()
+
+	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
+	_, err := dbConnection.Exec(createAccount, "Bob", "test@insert.com", "demo")
+
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
 
 }

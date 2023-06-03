@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	// api "command-line-argumentsC:\\Users\\PC_User\\MyProject\\telemy-backend\\golang\\src\\api\\account.go"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -29,6 +30,24 @@ func NewQueries(db *sql.DB) Queries {
 	return Queries{
 		connection: db,
 	}
+}
+
+type CreateAccountRequest struct {
+	Nickname string `json:"nickname"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (q Queries) CreateAccount(r CreateAccountRequest) error {
+	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
+	result, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
+
+	fmt.Println(result)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (q Queries) GetAccount(id string) (Account, error) {

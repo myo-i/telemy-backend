@@ -24,7 +24,9 @@ func NewServer() {
 
 func (server *Server) setupRouter() {
 	http.HandleFunc("/hello", echoHello)
+	http.HandleFunc("/create-account", server.createAccount)
 	http.HandleFunc("/accounts/", server.getAccount)
+	http.HandleFunc("/insertDemo", insertDemo)
 	http.ListenAndServe(":8080", nil)
 
 }
