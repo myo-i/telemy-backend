@@ -13,14 +13,8 @@ func createAccount(w http.ResponseWriter) {
 	fmt.Fprintf(w, "create account: %s", str)
 }
 
-type CreateAccountRequest struct {
-	Nickname string `json:"nickname"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
-	var requestBody CreateAccountRequest
+	var requestBody db.CreateAccountRequest
 
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
@@ -28,10 +22,10 @@ func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(requestBody.Nickname)
 
-	// account, err := server.queries.CreateAccount(requestBody)
-	// if err != nil {
-	// 	http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
-	// }
+	err = server.queries.CreateAccount(requestBody)
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
 
 	jsonData, err := json.Marshal(requestBody)
 	if err != nil {
