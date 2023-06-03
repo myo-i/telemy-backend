@@ -40,9 +40,8 @@ type CreateAccountRequest struct {
 
 func (q Queries) CreateAccount(r CreateAccountRequest) error {
 	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
-	result, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
 
-	fmt.Println(result)
+	_, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
 	if err != nil {
 		return err
 	}
@@ -72,4 +71,15 @@ func (q Queries) GetAccount(id string) (Account, error) {
 		}
 	}
 	return a, nil
+}
+
+func (q *Queries) DeleteAccount(id string) error {
+	deleteAccount := "DELETE FROM accounts WHERE id = ?"
+
+	_, err := q.connection.Exec(deleteAccount, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

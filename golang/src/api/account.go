@@ -35,14 +35,6 @@ func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonData)
-
-	// レスポンスからnickname, email, passwordを取得
-
-	// DB追加
-	// err := server.queries.CreateAccount(request)
-
-	// できれば挿入したデータをレスポンスとして返す
-
 }
 
 func (server *Server) getAccount(w http.ResponseWriter, r *http.Request) {
@@ -62,8 +54,19 @@ func (server *Server) getAccount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonData)
-	// fmt.Fprintf(w, "ID:%v, Nickname:%s, Email:%s, Password:%s, CreatedAt:%s", &account.ID, account.Nickname, account.Email, account.Password, account.CreatedAt)
 
+}
+
+func (server *Server) deleteAccount(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Path[len("/delete-account/"):]
+
+	err := server.queries.DeleteAccount(id)
+	if err != nil {
+		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 }
 
 func echoHello(w http.ResponseWriter, r *http.Request) {

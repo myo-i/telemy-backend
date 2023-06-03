@@ -24,9 +24,11 @@ func NewServer() {
 
 func (server *Server) setupRouter() {
 	http.HandleFunc("/hello", echoHello)
+	http.HandleFunc("/insertDemo", insertDemo)
+
 	http.HandleFunc("/create-account", server.createAccount)
 	http.HandleFunc("/accounts/", server.getAccount)
-	http.HandleFunc("/insertDemo", insertDemo)
+	http.HandleFunc("/delete-account/", server.deleteAccount)
 	http.ListenAndServe(":8080", nil)
 
 }
