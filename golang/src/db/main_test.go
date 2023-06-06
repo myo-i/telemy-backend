@@ -1,14 +1,13 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	"testing"
 )
 
-var testQueries *Queries
+// var testQueries *Queries
 
-var testDB *sql.DB
+// var testDB *sql.DB
 
 func TestMain(m *testing.M) {
 	testDB = ConnectDB()
