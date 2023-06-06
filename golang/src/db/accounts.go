@@ -46,7 +46,7 @@ func (q Queries) GetAccount(id string) (Account, error) {
 	return a, nil
 }
 
-func (q *Queries) DeleteAccount(id string) error {
+func (q Queries) DeleteAccount(id string) error {
 	deleteAccount := "DELETE FROM accounts WHERE id = ?"
 
 	_, err := q.connection.Exec(deleteAccount, id)
