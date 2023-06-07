@@ -10,10 +10,10 @@ import (
 // var testDB *sql.DB
 
 func TestMain(m *testing.M) {
-	testDB = ConnectDB()
+	// testDB = ConnectDB()
 
-	testQueries := NewQueries(testDB)
-	fmt.Println("testQueries", testQueries)
+	// testQueries := NewQueries(testDB)
+	fmt.Println("メインの処理があれば記述")
 
 	m.Run()
 }
