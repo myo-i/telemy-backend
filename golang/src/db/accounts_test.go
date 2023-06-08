@@ -38,3 +38,33 @@ func TestGetAccount(t *testing.T) {
 		t.Errorf("Unfulfilled expectations: %v", err)
 	}
 }
+
+func TestCreateAccount(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock error: %s", err)
+	}
+	defer db.Close()
+
+	nickname := "test"
+	email := "test@test.com"
+	password := "pass"
+
+	mock.ExpectExec("INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);").
+		WithArgs(nickname, email, password).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	// テスト対象の呼び出し
+	queries := Queries{db}
+	request := CreateAccountRequest{
+		Nickname: nickname,
+		Email:    email,
+		Password: password,
+	}
+
+	// CreateAccountの返り値がerrorだけなのでテストしにくい...（AccountかCreateAccountRequestwを返してもいいかも...）
+	err = queries.CreateAccount(request)
+	if err != nil {
+		t.Errorf("Failed to exec CreateAccount: ", err)
+	}
+}
