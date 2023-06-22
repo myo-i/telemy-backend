@@ -8,11 +8,6 @@ import (
 	"telemy/db"
 )
 
-func createAccount(w http.ResponseWriter) {
-	str := "test"
-	fmt.Fprintf(w, "create account: %s", str)
-}
-
 func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
 	var requestBody db.CreateAccountRequest
 
