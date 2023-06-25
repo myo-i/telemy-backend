@@ -52,7 +52,7 @@ func TestCreateAccount(t *testing.T) {
 
 	mock.ExpectExec("INSERT INTO accounts").
 		WithArgs(nickname, email, password).
-		WillReturnResult(sqlmock.NewResult(3, 1))
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	queries := Queries{db}
 	request := CreateAccountRequest{
@@ -63,6 +63,28 @@ func TestCreateAccount(t *testing.T) {
 
 	if err = queries.CreateAccount(request); err != nil {
 		t.Errorf("Failed to exec CreateAccount: %s", err)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestDeleteAccount(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("sqlmock error: %s", err)
+	}
+	defer db.Close()
+
+	id := "1"
+	mock.ExpectExec("DELETE FROM accounts").
+		WithArgs(id).
+		WillReturnResult(sqlmock.NewResult(5, 5))
+
+	queries := Queries{db}
+	if err := queries.DeleteAccount(id); err != nil {
+		t.Errorf("Failed to exec DeleteAccount: %s", err)
 	}
 
 	if err := mock.ExpectationsWereMet(); err != nil {
