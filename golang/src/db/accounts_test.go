@@ -50,11 +50,10 @@ func TestCreateAccount(t *testing.T) {
 	email := "test@test.com"
 	password := "pass"
 
-	mock.ExpectExec("INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);").
+	mock.ExpectExec("INSERT INTO accounts").
 		WithArgs(nickname, email, password).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+		WillReturnResult(sqlmock.NewResult(3, 1))
 
-	// テスト対象の呼び出し
 	queries := Queries{db}
 	request := CreateAccountRequest{
 		Nickname: nickname,
@@ -62,9 +61,11 @@ func TestCreateAccount(t *testing.T) {
 		Password: password,
 	}
 
-	// CreateAccountの返り値がerrorだけなのでテストしにくい...（AccountかCreateAccountRequestwを返してもいいかも...）
-	err = queries.CreateAccount(request)
-	if err != nil {
-		t.Errorf("Failed to exec CreateAccount: ", err)
+	if err = queries.CreateAccount(request); err != nil {
+		t.Errorf("Failed to exec CreateAccount: %s", err)
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
