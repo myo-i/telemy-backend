@@ -10,19 +10,15 @@ type CreateAccountRequest struct {
 	Password string `json:"password"`
 }
 
-func (q Queries) CreateAccount(r CreateAccountRequest) (int64, error) {
+func (q Queries) CreateAccount(r CreateAccountRequest) error {
 	createAccount := "INSERT INTO accounts (nickname, email, password) VALUES (?, ?, ?);"
 
-	result, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
+	_, err := q.connection.Exec(createAccount, r.Nickname, r.Email, r.Password)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return 0, err
-	}
-	return affected, nil
+	return nil
 }
 
 func (q Queries) GetAccount(id string) (Account, error) {

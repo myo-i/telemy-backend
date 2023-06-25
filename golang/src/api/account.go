@@ -15,10 +15,8 @@ func (server *Server) createAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
 	}
-	fmt.Println(requestBody.Nickname)
 
-	err = server.queries.CreateAccount(requestBody)
-	if err != nil {
+	if err := server.queries.CreateAccount(requestBody); err != nil {
 		http.Error(w, "パラメータに問題あり", http.StatusBadRequest)
 	}
 
