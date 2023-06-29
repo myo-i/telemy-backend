@@ -29,6 +29,7 @@ func (server *Server) setupRouter() {
 	http.HandleFunc("/create-account", server.createAccount)
 	http.HandleFunc("/accounts/", server.getAccount)
 	http.HandleFunc("/delete-account/", server.deleteAccount)
+	http.HandleFunc("/create-output/", server.createOutput)
 	http.ListenAndServe(":8080", nil)
 
 }
